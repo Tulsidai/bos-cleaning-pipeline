@@ -1,4 +1,4 @@
-# BOS Analytical Unit — Data Cleaning Pipeline
+# BOS Technical Unit Data Cleaning Pipeline
 
 **Participant:** Tulsidai Singh
 **Dataset:** TBD
@@ -14,11 +14,14 @@ TBD once dataset is assigned.
 4. Run `source("run_pipeline.R")` to execute the full pipeline
 
 ## Project structure
-raw/          # raw data — never edited in place
-R/            # pipeline scripts
-outputs/      # cleaned datasets, data dictionary, rendered report
-reports/      # weekly Friday reports
-presentation/ # final PowerPoint
+
+```
+raw/           # raw data — never edited in place
+R/             # pipeline scripts
+outputs/       # cleaned datasets, data dictionary, rendered report
+reports/       # weekly Friday reports
+presentation/  # final PowerPoint
+```
 
 ## Outputs
 
@@ -32,7 +35,7 @@ presentation/ # final PowerPoint
 
 ## Dependencies
 See `renv.lock`. Restore with `renv::restore()`.
-Python users can read `.sav` and `.dta` via `pyreadstat` — no separate Python export is provided.
+Python users can read `.sav` and `.dta` via `pyreadstat`, no separate Python export is provided.
 
 ## Notes
-TBD.
+TBD
