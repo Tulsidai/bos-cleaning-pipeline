@@ -1,0 +1,6 @@
+Ingest completed: 2026-04-21 15:12:17.650919
+Rows loaded: 87489
+Columns loaded: 8
+Columns: name, author, narrator, time, releasedate, language, stars, price
+Encoding: UTF-8
+Source: C:/Users/tsingh/Desktop/bos-cleaning-pipeline/raw/audible_uncleaned.csv
