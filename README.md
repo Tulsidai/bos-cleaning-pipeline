@@ -1,17 +1,25 @@
 # BOS Technical Unit Data Cleaning Pipeline
 
 **Participant:** Tulsidai Singh
-**Dataset:** TBD
+**Dataset:** Audible Dataset
 **Evaluating officer:** Imraan Khan  
 
 ## Overview
-TBD once dataset is assigned.
+A reproducible R pipeline that ingests, diagnoses, cleans and exports the Audible audiobook dataset.
+
+## Data source
+Audible Dataset by Snehangsude — Kaggle (CC0 Public Domain)  
+https://www.kaggle.com/datasets/snehangsude/audible-dataset  
+Raw file: `raw/audible_uncleaned.csv`
 
 ## How to reproduce
 1. Clone this repository
 2. Open `bos-cleaning-pipeline.Rproj` in RStudio
-3. Run `renv::restore()` to install packages
+3. Run `renv::restore()` to install dependencies
 4. Run `source("run_pipeline.R")` to execute the full pipeline
+
+All outputs will be written to `outputs/`.
+
 
 ## Project structure
 
@@ -34,8 +42,10 @@ presentation/  # final PowerPoint
 | `outputs/report.docx` | Automated Word report |
 
 ## Dependencies
-See `renv.lock`. Restore with `renv::restore()`.
-Python users can read `.sav` and `.dta` via `pyreadstat`, no separate Python export is provided.
 
-## Notes
-TBD
+Managed with `renv`. Run `renv::restore()` to install the exact package versions used.  
+Python users can read `.sav` and `.dta` via `pyreadstat` — no separate Python export is provided.
+
+## Data source note
+
+The raw dataset is CC0 Public Domain and is included in this repository for reproducibility.
