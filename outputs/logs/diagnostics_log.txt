@@ -1,0 +1,31 @@
+Diagnostics completed: 2026-04-22 15:10:11.13998
+
+~~ Missingness ~~
+# A tibble: 8 × 3
+  variable    n_miss pct_miss
+  <chr>        <int>    <num>
+1 name             0        0
+2 author           0        0
+3 narrator         0        0
+4 time             0        0
+5 releasedate      0        0
+6 language         0        0
+7 stars            0        0
+8 price            0        0
+
+~~ Column types ~~
+       name      author    narrator        time releasedate    language       stars       price 
+"character" "character" "character" "character" "character" "character" "character" "character" 
+
+~~ Duplicates ~~
+Full row duplicates: 0
+Duplicates on name + author: 1523
+
+~~ Known issues ~~
+Free price entries: 338
+Not rated yet (stars): 72417
+Short names (< 3 chars): 50
+
+~~ Empty strings ~~
+       name      author    narrator        time releasedate    language       stars       price 
+          0           0           0           0           0           0           0           0 
