@@ -59,32 +59,20 @@ cat(paste(log_lines, collapse = "\n"), "\n")
 
 
 
-# CHARTS
-
-# Recode known non-NA placeholders to NA for visualisation only
+# Charts 
+#recode placeholders to NA for visualisation only
 df_vis <- df
 df_vis$stars[df_vis$stars == "Not rated yet"] <- NA
 df_vis$price[df_vis$price == "Free"]          <- NA
 
-# Missingness by variable
 p_miss <- gg_miss_var(df_vis, show_pct = TRUE) +
   labs(title = "Missingness by variable (incl. placeholders)", x = NULL) +
   theme_minimal()
 
 ggsave(file.path(p_log, "missingness.png"), p_miss, width = 8, height = 5)
 
-# Type overview
 p_types <- vis_dat(df_vis)
 ggsave(file.path(p_log, "type_overview.png"), p_types, width = 10, height = 6)
 
-# Missingness by variable
-p_miss <- gg_miss_var(df, show_pct = TRUE) +
-  labs(title = "Missingness by variable", x = NULL) +
-  theme_minimal()
-
-ggsave(file.path(p_log, "missingness.png"), p_miss, width = 8, height = 5)
-
-# Type overview
-png(file.path(p_log, "type_overview.png"), width = 800, height = 500)
-vis_dat(df)
-dev.off()
+# Pass unmodified data forward
+saveRDS(df, file.path(p_out, "diagnosed.rds"))
