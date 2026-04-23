@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+outputs/raw_loaded.rds
+outputs/diagnosed.rds
