@@ -8,7 +8,7 @@
 A reproducible R pipeline that ingests, diagnoses, cleans and exports the Audible audiobook dataset.
 
 ## Data source
-Audible Dataset by Snehangsude — Kaggle (CC0 Public Domain)  
+Audible Dataset by Snehangsude from Kaggle (CC0 Public Domain)  
 https://www.kaggle.com/datasets/snehangsude/audible-dataset  
 Raw file: `raw/audible_uncleaned.csv`
 
