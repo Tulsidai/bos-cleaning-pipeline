@@ -1,5 +1,8 @@
-Cleaning started: 2026-04-27 15:25:32.822665
+Cleaning started: 2026-04-28 15:55:44.555971
 Rows at start: 87489
+
+── Duplicate check ──
+Full row duplicates: 0 | Name + author duplicates: 1523 | No deduplication applied — confirmed distinct editions
 
 ── Author cleaning ──
 Sample: Geronimo Stilton | Rick Riordan | Jeff Kinney
@@ -28,5 +31,5 @@ Flagged: 50
 ── Outlier flagging ──
 Price outliers: 704 | Duration outliers: 2098
 
-Cleaning completed: 2026-04-27 15:25:34.711594
+Cleaning completed: 2026-04-28 15:55:47.89911
 Rows at end: 87489

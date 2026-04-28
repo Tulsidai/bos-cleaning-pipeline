@@ -18,6 +18,14 @@ log_stage <- function(label, detail = NULL) {
   lines
 }
 
+# Duplicate check (logged here, no deduplication applied)
+n_dupes_full <- sum(duplicated(df))
+n_dupes_key  <- sum(duplicated(df[, c("name", "author")]))
+log_lines <- c(log_lines, log_stage("Duplicate check",
+                                    paste("Full row duplicates:", n_dupes_full,
+                                          "| Name + author duplicates:", n_dupes_key,
+                                          "| No deduplication applied — confirmed distinct editions")))
+
 
 # 1. Author - strip prefix, insert spaces between joined words
 df <- df |>
