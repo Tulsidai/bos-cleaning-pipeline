@@ -14,7 +14,7 @@ log_lines <- c(paste("Cleaning started:", Sys.time()),
 
 # helper to log each stage
 log_stage <- function(label, detail = NULL) {
-  lines <- c("", paste0("── ", label, " ──"), detail)
+  lines <- c("", paste0("~~ ", label, " ~~"), detail)
   lines
 }
 

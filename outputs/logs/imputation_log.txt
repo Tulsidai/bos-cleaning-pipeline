@@ -1,0 +1,9 @@
+Imputation started: 2026-04-28 15:58:41.773083
+Rows at start: 87489
+
+── Rating / rating_count ──
+NAs in rating: 72417
+NAs in rating_count: 72417
+Decision: left as NA — structural missing, imputation not justified.
+
+Imputation completed: 2026-04-28 15:58:41.773604
