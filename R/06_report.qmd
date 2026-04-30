@@ -1,0 +1,302 @@
+---
+title: "Audible Dataset Data Cleaning Report"
+subtitle: "BOS Analytical Unit | Technical Assessment"
+author: "Tulsidai Singh"
+date: today
+format:
+  docx:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    fig-width: 7
+    fig-height: 4
+    fig-dpi: 300
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(here)
+source(here::here("R/00_config.R"))
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(naniar)
+
+df_raw   <- readRDS(file.path(p_out, "raw_loaded.rds"))
+df_clean <- readRDS(file.path(p_out, "imputed.rds"))
+
+# Colour palette
+col_navy  <- "#1D2D44"
+col_gold  <- "#C9A84C"
+col_grey  <- "#8C8C8C"
+col_light <- "#F5F5F5"
+
+theme_audible <- function() {
+  theme_minimal(base_size = 11, base_family = "sans") +
+    theme(
+      plot.title       = element_text(colour = col_navy, face = "bold", size = 13),
+      plot.subtitle    = element_text(colour = col_grey, size = 10),
+      plot.caption     = element_text(colour = col_grey, size = 8, hjust = 0),
+      axis.title       = element_text(colour = col_navy, size = 10),
+      axis.text        = element_text(colour = col_grey, size = 9),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(colour = "#EBEBEB"),
+      plot.background  = element_rect(fill = "white", colour = NA),
+      panel.background = element_rect(fill = "white", colour = NA),
+      strip.text       = element_text(colour = col_navy, face = "bold")
+    )
+}
+```
+
+# Dataset Overview
+
+The dataset used in this pipeline is the Audible audiobook dataset sourced from Kaggle
+(CC0 Public Domain, collected by Snehangsude via web scraping from Audible.in).
+It contains **87,489 records** across **8 variables** covering audiobook titles,
+authors, narrators, duration, release dates, languages, star ratings, and prices in INR.
+The data spans releases from December 1998 through November 2025.
+
+| Variable | Description |
+|---|---|
+| `name` | Audiobook title |
+| `author` | Author(s) |
+| `narrator` | Narrator(s) |
+| `time` | Duration as text string |
+| `releasedate` | Release date (DD-MM-YY) |
+| `language` | Language of the audiobook |
+| `stars` | Rating string |
+| `price` | Price in INR |
+
+# Data Quality Diagnostics
+
+## Missingness
+
+No true NA values were present in the raw dataset. However, two variables contained
+placeholder strings used in place of missing values: `stars` had 72,417 entries
+(82.8%) recorded as `"Not rated yet"`, and `price` had 338 entries (0.4%) recorded
+as `"Free"`. These were treated as structural missing and encoding issues respectively,
+not as data errors.
+
+```{r fig-missingness}
+#| fig-cap: "Missingness by variable, placeholders recoded to NA for visualisation"
+
+df_vis <- df_raw
+df_vis$stars[df_vis$stars == "Not rated yet"] <- NA
+df_vis$price[df_vis$price == "Free"] <- NA
+
+miss_data <- miss_var_summary(df_vis) |>
+  mutate(variable = reorder(variable, pct_miss),
+         pct_miss = as.numeric(pct_miss))
+
+ggplot(miss_data, aes(x = pct_miss, y = variable)) +
+  geom_col(fill = col_navy, width = 0.6) +
+  geom_text(aes(label = paste0(round(pct_miss, 1), "%")),
+            hjust = -0.2, size = 3, colour = col_navy) +
+  scale_x_continuous(limits = c(0, 100), labels = label_percent(scale = 1)) +
+  labs(title = "Missingness by Variable",
+       subtitle = "Placeholder strings recoded to NA for diagnosis",
+       x = "% Missing", y = NULL,
+       caption = "Source: audible_uncleaned.csv") +
+  theme_audible()
+```
+
+## Column Types
+
+All eight raw variables were ingested as character strings. Type coercion was required
+for `price` (numeric), `releasedate` (date), `time` (numeric minutes), and `stars`
+(split into numeric rating and integer count).
+
+## Duplicates
+
+No full-row duplicates were found. 1,523 records share the same `name` and `author`
+but differ by narrator, language, release date, or price and confirmed as distinct
+editions. No deduplication was applied.
+
+# Cleaning Decisions
+
+## Author and Narrator
+
+Both fields contained a concatenated prefix (`Writtenby:`, `Narratedby:`) with no
+spaces between words (e.g. `GeronimoStilton`). The prefix was stripped using regex
+and word boundaries were inserted between camelCase joins. This was verified to work
+correctly on Latin, accented, and Asian-script names. A known edge case exists where
+compound lowercase particles (e.g. `de`, `van`) following an initial may not be
+separated but it was documented as a limitation.
+
+## Language
+
+All language values were normalised to title case and underscores replaced with spaces
+(`mandarin_chinese` → `Mandarin Chinese`). Only `English` and `Hindi` were already
+title case; all other 34 languages were lowercase.
+
+## Price
+
+Comma separators were stripped from values like `"1,002.00"`. The 338 `"Free"` entries
+were converted to `0` rather than `NA`, free audiobooks are a legitimate price point,
+not missing data. Converted to numeric.
+
+## Stars
+
+The concatenated string `"4.5 out of 5 stars41 ratings"` was split into two columns:
+`rating` (numeric, 0–5) and `rating_count` (integer). The 72,417 `"Not rated yet"`
+entries were converted to `NA` for both columns. This is a structural missing error,
+83% of the dataset is unrated, reflecting genuine absence of ratings rather than
+a data collection failure.
+
+## Time
+
+Duration strings were parsed into `duration_mins` (total minutes, numeric). All
+format variants were handled: `"2 hrs and 20 mins"`, `"10 hrs"`, `"1 hr and 1 min"`,
+`"1 min"`, and `"Less than 1 minute"` (converted to 0).
+
+## Release Date
+
+Dates stored as `DD-MM-YY` were parsed to proper R date objects. A century cutoff
+rule was applied: 2-digit years 95–99 map to 1995–1999; 00–94 map to 2000–2094.
+This is justified by the dataset's documented range of 1998–2025. No NAs were
+produced by the parse.
+
+## Short Name Flagging
+
+50 records with titles shorter than 3 characters were flagged via `short_name_flag`.
+These are likely legitimate titles (single characters, numbers, Japanese kanji) and
+were not removed.
+
+## Outlier Flagging
+
+IQR-based outlier detection (k = 1.5) was applied to `price` and `duration_mins`.
+704 price outliers and 2,098 duration outliers were flagged. No records were dropped, but
+flags are available for downstream analysis.
+
+# Imputation
+
+Only `rating` and `rating_count` contained missing values after cleaning (72,417 NAs,
+82.8%). Imputation was not applied. With 83% of the column missing, any imputed value
+would reflect the distribution of the rated minority, not the true population. The
+missingness is structural, books without ratings on Audible simply have no rating.
+Leaving these as `NA` is the honest and defensible choice.
+
+All other variables had zero missing values after cleaning.
+
+# Post-Cleaning Summary
+
+```{r tbl-summary}
+summary_data <- data.frame(
+  Metric = c("Total records", "Total variables (after cleaning)",
+             "Records with price = 0 (Free)", "Records flagged: short name",
+             "Records flagged: price outlier", "Records flagged: duration outlier",
+             "Missing: rating / rating_count", "Missing: all other variables"),
+  Value = c("87,489", "14", "338 (0.4%)", "50 (0.1%)",
+            "704 (0.8%)", "2,098 (2.4%)", "72,417 (82.8%)", "0")
+)
+
+knitr::kable(summary_data, col.names = c("Metric", "Value"),
+             caption = "Post-cleaning dataset summary")
+```
+
+```{r fig-price}
+#| fig-cap: "Distribution of audiobook price (INR) after cleaning"
+
+q1_p  <- quantile(df_clean$price, 0.25)
+q3_p  <- quantile(df_clean$price, 0.75)
+iqr_p <- q3_p - q1_p
+upper_p <- q3_p + 1.5 * iqr_p
+
+ggplot(df_clean, aes(x = price)) +
+  geom_histogram(bins = 60, fill = col_navy, colour = "white", linewidth = 0.2) +
+  geom_vline(xintercept = upper_p, colour = col_gold, linetype = "dashed", linewidth = 0.8) +
+  annotate("text", x = upper_p + 50, y = Inf, vjust = 2,
+           label = paste0("IQR outlier\nthreshold: ", round(upper_p)),
+           colour = col_gold, size = 3, hjust = 0) +
+  scale_x_continuous(labels = label_comma()) +
+  labs(title = "Price Distribution",
+       subtitle = "Prices in Indian Rupees (INR) | Free entries converted to 0",
+       x = "Price (INR)", y = "Count",
+       caption = "Dashed line: IQR outlier threshold (k = 1.5)") +
+  theme_audible()
+```
+
+```{r fig-duration}
+#| fig-cap: "Distribution of audiobook duration (minutes) after cleaning"
+
+q1_d  <- quantile(df_clean$duration_mins, 0.25)
+q3_d  <- quantile(df_clean$duration_mins, 0.75)
+iqr_d <- q3_d - q1_d
+upper_d <- q3_d + 1.5 * iqr_d
+
+ggplot(df_clean, aes(x = duration_mins)) +
+  geom_histogram(bins = 60, fill = col_navy, colour = "white", linewidth = 0.2) +
+  geom_vline(xintercept = upper_d, colour = col_gold, linetype = "dashed", linewidth = 0.8) +
+  annotate("text", x = upper_d + 20, y = Inf, vjust = 2,
+           label = paste0("IQR outlier\nthreshold: ", round(upper_d), " mins"),
+           colour = col_gold, size = 3, hjust = 0) +
+  scale_x_continuous(labels = label_comma()) +
+  labs(title = "Duration Distribution",
+       subtitle = "Parsed from text strings into total minutes",
+       x = "Duration (minutes)", y = "Count",
+       caption = "Dashed line: IQR outlier threshold (k = 1.5)") +
+  theme_audible()
+```
+
+```{r fig-rating}
+#| fig-cap: "Distribution of star ratings among rated audiobooks"
+
+df_rated <- df_clean |> filter(!is.na(rating))
+
+ggplot(df_rated, aes(x = factor(rating))) +
+  geom_bar(fill = col_navy, width = 0.6) +
+  geom_text(stat = "count", aes(label = after_stat(count)),
+            vjust = -0.4, size = 3, colour = col_navy) +
+  labs(title = "Star Rating Distribution",
+       subtitle = paste0("Based on ", scales::comma(nrow(df_rated)),
+                         " rated audiobooks (", scales::comma(nrow(df_clean) - nrow(df_rated)),
+                         " unrated excluded)"),
+       x = "Star Rating", y = "Count",
+       caption = "Unrated entries (Not rated yet) excluded from this chart") +
+  theme_audible()
+```
+
+```{r fig-language}
+#| fig-cap: "Top 10 languages by number of audiobooks"
+
+lang_counts <- df_clean |>
+  count(language, sort = TRUE) |>
+  slice_head(n = 10) |>
+  mutate(language = reorder(language, n))
+
+ggplot(lang_counts, aes(x = n, y = language)) +
+  geom_col(fill = col_navy, width = 0.6) +
+  geom_text(aes(label = scales::comma(n)),
+            hjust = -0.2, size = 3, colour = col_navy) +
+  scale_x_continuous(labels = label_comma(),
+                     limits = c(0, max(lang_counts$n) * 1.15)) +
+  labs(title = "Top 10 Languages",
+       subtitle = "English dominates at 70.7% of the dataset",
+       x = "Number of audiobooks", y = NULL,
+       caption = "36 languages total in the dataset") +
+  theme_audible()
+```
+
+# Limitations and Known Risks
+
+- **Author/narrator word spacing** - the regex correctly handles standard camelCase
+  but may miss spaces before lowercase particles (e.g. `de`, `van`, `al`) in
+  non-English names. Affected records are a small minority and have been noted.
+
+- **2-digit year inference** - the century cutoff rule is a judgment call. Any record
+  with a release year of 95–99 has been mapped to the 1990s. If future data contains
+  genuine 2095–2099 releases, this rule would need revisiting.
+
+- **Price currency** - all prices are in Indian Rupees (INR), as this data was
+  scraped from Audible.in. No currency conversion has been applied.
+
+- **Structural missing in ratings** - 82.8% of rating values are `NA`. Any analysis
+  using `rating` or `rating_count` applies only to the 17.2% of audiobooks that
+  have been rated, and may not be representative of the full catalogue.
+
+- **Web-scraped data** - the dataset was collected via scraping and may contain
+  transcription errors, encoding artefacts, or records that were incomplete at the
+  time of collection.
