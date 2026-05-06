@@ -20,11 +20,11 @@ source("R/03_clean.R")
 cat("4/7 ~ Imputing\n")
 source("R/04_impute.R")
 
-cat("5/7 ~ Exporting\n")
-source("R/05_export.R")
-
-cat("6/7 ~ Building data dictionary\n")
+cat("5/7 ~ Building data dictionary\n")
 source("R/data_dictionary.R")
+
+cat("6/7 ~ Exporting\n")
+source("R/05_export.R")
 
 cat("7/7 ~ Rendering report\n")
 quarto::quarto_render("R/06_report.qmd")

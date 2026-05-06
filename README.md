@@ -46,6 +46,22 @@ presentation/  # final PowerPoint
 
 Managed with `renv`. Run `renv::restore()` to install the exact package versions used.  
 Python users can read `.sav` and `.dta` via `pyreadstat` — no separate Python export is provided.
+Quarto CLI must be installed separately — download from [quarto.org](https://quarto.org).  
+To run without RStudio: `Rscript run_pipeline.R` from the project root.
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `R/00_config.R` | All paths, thresholds, and parameters |
+| `R/01_ingest.R` | Load raw CSV, validate shape, log |
+| `R/02_diagnose.R` | Exploratory diagnostics, missingness charts |
+| `R/03_clean.R` | All 8 cleaning stages, logged |
+| `R/04_impute.R` | Imputation decisions and logging |
+| `R/05_export.R` | Multi-format exports |
+| `R/data_dictionary.R` | Build and write data dictionary |
+| `R/06_report.qmd` | Automated Word report |
+| `run_pipeline.R` | Single entry point — runs everything |
 
 ## Data source note
 

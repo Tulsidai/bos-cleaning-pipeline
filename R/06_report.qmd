@@ -81,26 +81,31 @@ as `"Free"`. These were treated as structural missing and encoding issues respec
 not as data errors.
 
 ```{r fig-missingness}
-#| fig-cap: "Missingness by variable, placeholders recoded to NA for visualisation"
+#| fig-cap: "Missingness by variable, before and after cleaning"
 
-df_vis <- df_raw
-df_vis$stars[df_vis$stars == "Not rated yet"] <- NA
-df_vis$price[df_vis$price == "Free"] <- NA
+df_vis_raw <- df_raw
+df_vis_raw$stars[df_vis_raw$stars == "Not rated yet"] <- NA
+df_vis_raw$price[df_vis_raw$price == "Free"] <- NA
 
-miss_data <- miss_var_summary(df_vis) |>
+miss_before <- miss_var_summary(df_vis_raw) |>
+  mutate(pct_miss = as.numeric(pct_miss), state = "Before cleaning")
+
+miss_after <- miss_var_summary(df_clean) |>
+  mutate(pct_miss = as.numeric(pct_miss), state = "After cleaning")
+
+miss_combined <- bind_rows(miss_before, miss_after) |>
   mutate(variable = reorder(variable, pct_miss),
-         pct_miss = as.numeric(pct_miss))
+         state = factor(state, levels = c("Before cleaning", "After cleaning")))
 
-ggplot(miss_data, aes(x = pct_miss, y = variable)) +
-  geom_col(fill = col_navy, width = 0.6) +
-  geom_text(aes(label = paste0(round(pct_miss, 1), "%")),
-            hjust = -0.2, size = 3, colour = col_navy) +
+ggplot(miss_combined, aes(x = pct_miss, y = variable, fill = state)) +
+  geom_col(position = "dodge", width = 0.6) +
+  scale_fill_manual(values = c("Before cleaning" = col_navy, "After cleaning" = col_gold)) +
   scale_x_continuous(limits = c(0, 100), labels = label_percent(scale = 1)) +
-  labs(title = "Missingness by Variable",
-       subtitle = "Placeholder strings recoded to NA for diagnosis",
-       x = "% Missing", y = NULL,
-       caption = "Source: audible_uncleaned.csv") +
-  theme_audible()
+  labs(title = "Missingness by Variable — Before and After Cleaning",
+       x = "% Missing", y = NULL, fill = NULL,
+       caption = "Before: placeholder strings recoded to NA. After: post-cleaning dataset.") +
+  theme_audible() +
+  theme(legend.position = "top")
 ```
 
 ## Column Types
@@ -300,3 +305,5 @@ ggplot(lang_counts, aes(x = n, y = language)) +
 - **Web-scraped data** - the dataset was collected via scraping and may contain
   transcription errors, encoding artefacts, or records that were incomplete at the
   time of collection.
+  
+- **Observed vs imputed chart** — no imputation was applied to any variable, so the before/after imputation comparison is not produced. Rating missingness is structural (83%) and not suitable for imputation.

@@ -31,7 +31,7 @@ dict <- data.frame(
     "0 to 7198 INR", "0 to 5", "0 to 12573",
     "0 to 7198", "TRUE / FALSE", "TRUE / FALSE", "TRUE / FALSE"),
   
-  pct_missing_raw = c(0, 0, 0, 0, 0, 0, 0, 0, NA, NA, NA, NA, NA, NA),
+  pct_missing_raw = c(0, 0, 0, 0, 0, 0, 82.77, 0.39, NA, NA, NA, NA, NA, NA),  
   
   pct_missing_clean = c(0, 0, 0, 0, 0, 0, 0, 0, 82.77, 82.77, 0, 0, 0, 0),
   
