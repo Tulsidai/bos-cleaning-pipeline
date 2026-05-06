@@ -23,4 +23,4 @@ log_lines <- c(log_lines, "", paste("Imputation completed:", Sys.time()))
 writeLines(log_lines, file.path(p_log, "imputation_log.txt"))
 cat(paste(log_lines, collapse = "\n"), "\n")
 
-saveRDS(df, file.path(p_out, "imputed.rds"))
+saveRDS(df, file.path(p_out, "cleaned.rds"))

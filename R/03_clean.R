@@ -37,6 +37,7 @@ df <- df |>
 
 log_lines <- c(log_lines, log_stage("Author cleaning",
                                     paste("Sample:", paste(head(df$author, 3), collapse = " | "))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 2. Narrator - strip prefix, insert spaces between joined words
@@ -49,6 +50,7 @@ df <- df |>
 
 log_lines <- c(log_lines, log_stage("Narrator cleaning",
                                     paste("Sample:", paste(head(df$narrator, 3), collapse = " | "))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 3. Language — title case, replace underscores with spaces
@@ -57,6 +59,7 @@ df <- df |>
 
 log_lines <- c(log_lines, log_stage("Language normalisation",
                                     paste("Unique values:", paste(sort(unique(df$language)), collapse = ", "))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 4. Price - strip commas, convert Free to 0, coerce to numeric
@@ -67,6 +70,7 @@ df <- df |>
 log_lines <- c(log_lines, log_stage("Price cleaning",
                                     paste("Free entries converted to 0:", sum(df$price == 0),
                                           "| NAs after coercion:", sum(is.na(df$price)))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 5. Stars — split into rating and rating_count, handle "Not rated yet"
@@ -81,6 +85,7 @@ df <- df |>
 log_lines <- c(log_lines, log_stage("Stars split",
                                     paste("Not rated yet (rating NA):", sum(is.na(df$rating)),
                                           "| Sample ratings:", paste(head(df$rating, 3), collapse = ", "))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 6. Time — parse duration string into total minutes as numeric
@@ -98,6 +103,7 @@ df <- df |>
 log_lines <- c(log_lines, log_stage("Time parsing",
                                     paste("NAs after parsing:", sum(is.na(df$duration_mins)),
                                           "| Sample:", paste(head(df$duration_mins, 3), collapse = ", "))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 7. Release date — parse DD-MM-YY to proper date, infer century
@@ -112,10 +118,13 @@ df <- df |>
       format = "%d-%m-%Y")
   )
 
+failed_dates <- sum(is.na(df$releasedate))
+if (failed_dates > 0) warning(paste(failed_dates, "dates failed to parse, check releasedate column"))
 
 log_lines <- c(log_lines, log_stage("Release date parsing",
                                     paste("NAs after parsing:", sum(is.na(df$releasedate)),
                                           "| Range:", min(df$releasedate, na.rm = TRUE), "to", max(df$releasedate, na.rm = TRUE))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 8. Name — flag short entries (< 3 chars) for review
@@ -124,9 +133,11 @@ df <- df |>
 
 log_lines <- c(log_lines, log_stage("Short name flagging",
                                     paste("Flagged:", sum(df$short_name_flag))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 
 # 9. Outlier flagging — IQR method on price and duration_mins
+
 iqr_flag <- function(x) {
   q1  <- quantile(x, 0.25, na.rm = TRUE)
   q3  <- quantile(x, 0.75, na.rm = TRUE)
@@ -136,13 +147,16 @@ iqr_flag <- function(x) {
 
 df <- df |>
   mutate(
-    price_outlier    = iqr_flag(price),
-    duration_outlier = iqr_flag(duration_mins)
+    price_outlier        = iqr_flag(price),
+    duration_outlier     = iqr_flag(duration_mins),
+    rating_count_outlier = iqr_flag(rating_count)
   )
 
 log_lines <- c(log_lines, log_stage("Outlier flagging",
                                     paste("Price outliers:", sum(df$price_outlier),
-                                          "| Duration outliers:", sum(df$duration_outlier))))
+                                          "| Duration outliers:", sum(df$duration_outlier),
+                                          "| Rating count outliers:", sum(df$rating_count_outlier, na.rm = TRUE))))
+log_lines <- c(log_lines, paste("Rows after:", nrow(df)))
 
 # Write log and save
 

@@ -7,14 +7,18 @@ library(haven)
 library(openxlsx)
 
 # Load
-df <- readRDS(file.path(p_out, "imputed.rds"))
+df <- readRDS(file.path(p_out, "cleaned.rds"))
 dict <- read.csv(file.path(p_out, "data_dictionary.csv"))
 
-# RDS
-saveRDS(df, file.path(p_out, "cleaned.rds"))
-cat("RDS written\n")
+#RDS already done in 03
 
 # SPSS (.sav)
+
+# attach variable labels from data dictionary
+labels <- setNames(dict$label, dict$variable)
+labels <- labels[names(df)]
+for (v in names(labels)) attr(df[[v]], "label") <- labels[[v]]
+
 write_sav(df, file.path(p_out, "cleaned.sav"))
 cat("SAV written\n")
 

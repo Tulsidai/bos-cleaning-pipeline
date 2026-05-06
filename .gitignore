@@ -4,3 +4,5 @@
 .Ruserdata
 outputs/raw_loaded.rds
 outputs/diagnosed.rds
+outputs/imputed.rds
+R/06_report_files/
