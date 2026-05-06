@@ -111,9 +111,9 @@ for `price` (numeric), `releasedate` (date), `time` (numeric minutes), and `star
 
 ## Duplicates
 
-No full-row duplicates were found. 1,523 records share the same `name` and `author`
-but differ by narrator, language, release date, or price and confirmed as distinct
-editions. No deduplication was applied.
+No full-row duplicates were found. 1,523 records share the same name and author 
+but differ by narrator, language, release date, or price. These were confirmed 
+as distinct editions and no deduplication was applied.
 
 # Cleaning Decisions
 
@@ -142,9 +142,9 @@ not missing data. Converted to numeric.
 
 The concatenated string `"4.5 out of 5 stars41 ratings"` was split into two columns:
 `rating` (numeric, 0–5) and `rating_count` (integer). The 72,417 `"Not rated yet"`
-entries were converted to `NA` for both columns. This is a structural missing error,
-83% of the dataset is unrated, reflecting genuine absence of ratings rather than
-a data collection failure.
+entries were converted to `NA` for both columns. This is structural missing. 83% 
+of the dataset is unrated, reflecting genuine absence of ratings rather than a 
+data collection failure.
 
 ## Time
 

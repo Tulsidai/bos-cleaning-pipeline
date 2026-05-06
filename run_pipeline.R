@@ -27,6 +27,8 @@ cat("6/7 ~ Building data dictionary\n")
 source("R/data_dictionary.R")
 
 cat("7/7 ~ Rendering report\n")
-quarto::quarto_render("R/06_report.qmd", output_file = "../outputs/report.docx")
+quarto::quarto_render("R/06_report.qmd")
+file.copy("R/06_report.docx", "outputs/report.docx", overwrite = TRUE)
+file.remove("R/06_report.docx")
 
 cat("\nPipeline complete. All outputs written to outputs/\n")

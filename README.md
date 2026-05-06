@@ -39,6 +39,7 @@ presentation/  # final PowerPoint
 | `outputs/cleaned.dta` | Stata |
 | `outputs/cleaned.xlsx` | Excel (data + data dictionary sheets) |
 | `outputs/cleaned.rds` | R native |
+| `outputs/data_dictionary.csv` | Data dictionary (CSV) |
 | `outputs/report.docx` | Automated Word report |
 
 ## Dependencies

@@ -1,4 +1,4 @@
-Cleaning started: 2026-04-30 09:35:27.493092
+Cleaning started: 2026-05-06 14:42:08.835656
 Rows at start: 87489
 
 ~~ Duplicate check ~~
@@ -31,5 +31,5 @@ Flagged: 50
 ~~ Outlier flagging ~~
 Price outliers: 704 | Duration outliers: 2098
 
-Cleaning completed: 2026-04-30 09:35:29.605645
+Cleaning completed: 2026-05-06 14:42:11.068072
 Rows at end: 87489

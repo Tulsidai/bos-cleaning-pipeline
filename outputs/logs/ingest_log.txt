@@ -1,4 +1,4 @@
-Ingest completed: 2026-04-30 09:35:13.843341
+Ingest completed: 2026-05-06 14:41:59.291053
 Rows loaded: 87489
 Columns loaded: 8
 Columns: name, author, narrator, time, releasedate, language, stars, price
