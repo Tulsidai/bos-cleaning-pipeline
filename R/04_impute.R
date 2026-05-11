@@ -13,10 +13,23 @@ log_lines <- c(paste("Imputation started:", Sys.time()),
 # Structural missing books with no ratings on Audible, not a data error
 # Imputing 83% of a column would be misleading. Left as NA
 log_lines <- c(log_lines, "",
-               "── Rating / rating_count ──",
+               "~~ Rating / rating_count ~~",
                paste("NAs in rating:", sum(is.na(df$rating))),
                paste("NAs in rating_count:", sum(is.na(df$rating_count))),
                "Decision: left as NA — structural missing, imputation not justified.")
+
+# Median imputation for price = 0 (originally "Free")
+median_price <- median(df$price[df$price > 0], na.rm = TRUE)
+df <- df |>
+  mutate(
+    price_imputed_flag = price == 0,
+    price = ifelse(price == 0, median_price, price)
+  )
+
+log_lines <- c(log_lines, "",
+               "~~ Price imputation ~~",
+               paste("Records imputed (Free → median):", sum(df$price_imputed_flag)),
+               paste("Median price used:", round(median_price, 2)))
 
 # Log and save
 log_lines <- c(log_lines, "", paste("Imputation completed:", Sys.time()))

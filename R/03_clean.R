@@ -79,7 +79,7 @@ df <- df |>
     rating = ifelse(stars == "Not rated yet", NA_real_,
                     as.numeric(str_extract(stars, "^[0-9.]+")))  ,
     rating_count = ifelse(stars == "Not rated yet", NA_integer_,
-                          as.integer(str_extract(stars, "(?<=stars)[0-9]+")))
+                          as.integer(str_remove_all(str_extract(stars, "(?<=stars)[\\d,]+"), ",")))
   )
 
 log_lines <- c(log_lines, log_stage("Stars split",

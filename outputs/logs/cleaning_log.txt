@@ -1,4 +1,4 @@
-Cleaning started: 2026-05-06 14:42:08.835656
+Cleaning started: 2026-05-11 13:46:21.31131
 Rows at start: 87489
 
 ~~ Duplicate check ~~
@@ -6,30 +6,39 @@ Full row duplicates: 0 | Name + author duplicates: 1523 | No deduplication appli
 
 ~~ Author cleaning ~~
 Sample: Geronimo Stilton | Rick Riordan | Jeff Kinney
+Rows after: 87489
 
 ~~ Narrator cleaning ~~
 Sample: Bill Lobely | Robbie Daymond | Dan Russell
+Rows after: 87489
 
 ~~ Language normalisation ~~
 Unique values: Afrikaans, Arabic, Basque, Bulgarian, Catalan, Czech, Danish, Dutch, English, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Italian, Japanese, Korean, Lithuanian, Mandarin Chinese, Norwegian, Polish, Portuguese, Romanian, Russian, Slovene, Spanish, Swedish, Tamil, Telugu, Turkish, Ukrainian, Urdu
+Rows after: 87489
 
 ~~ Price cleaning ~~
 Free entries converted to 0: 338 | NAs after coercion: 0
+Rows after: 87489
 
 ~~ Stars split ~~
 Not rated yet (rating NA): 72417 | Sample ratings: 5, 4.5, 4.5
+Rows after: 87489
 
 ~~ Time parsing ~~
 NAs after parsing: 0 | Sample: 140, 788, 123
+Rows after: 87489
 
 ~~ Release date parsing ~~
 NAs after parsing: 0 | Range: 1998-12-27 to 2025-11-14
+Rows after: 87489
 
 ~~ Short name flagging ~~
 Flagged: 50
+Rows after: 87489
 
 ~~ Outlier flagging ~~
-Price outliers: 704 | Duration outliers: 2098
+Price outliers: 704 | Duration outliers: 2098 | Rating count outliers: 2035
+Rows after: 87489
 
-Cleaning completed: 2026-05-06 14:42:11.068072
+Cleaning completed: 2026-05-11 13:46:23.440004
 Rows at end: 87489

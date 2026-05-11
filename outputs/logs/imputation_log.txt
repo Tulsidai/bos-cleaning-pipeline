@@ -1,9 +1,13 @@
-Imputation started: 2026-05-06 14:42:12.859882
+Imputation started: 2026-05-11 13:46:24.51086
 Rows at start: 87489
 
-── Rating / rating_count ──
+~~ Rating / rating_count ~~
 NAs in rating: 72417
 NAs in rating_count: 72417
 Decision: left as NA — structural missing, imputation not justified.
 
-Imputation completed: 2026-05-06 14:42:12.860425
+~~ Price imputation ~~
+Records imputed (Free → median): 338
+Median price used: 585
+
+Imputation completed: 2026-05-11 13:46:24.517369

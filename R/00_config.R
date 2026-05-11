@@ -5,7 +5,6 @@ library(here)
 p_raw <- here("raw", "audible_uncleaned.csv")
 p_out <- here("outputs")
 p_log <- here("outputs", "logs")
-p_cleaned <- here("outputs", "cleaned.rds")
 
 # Shape of raw data
 p_exp_rows <- 87489L
@@ -21,5 +20,4 @@ p_year_recent <- 2000L
 p_short_name_nchar <- 3L
 
 # Outliers
-p_outlier_method <- "iqr"
 p_outlier_k      <- 1.5
